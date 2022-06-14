@@ -4,6 +4,7 @@ class MainLoop {
         this.canvas = this.element.querySelector(".game-canvas");
         this.ctx = this.canvas.getContext("2d");
         this.map = null;
+        this.menu = true;
     }
 
     gameLoop() {
@@ -13,7 +14,7 @@ class MainLoop {
 
             const cameraPerson = this.map.gameObject.hero;
 
-            const printOrder = this.map.order();
+            this.map.collide(cameraPerson);
 
             Object.values(this.map.gameObject).forEach(object => {
                 object.update({
@@ -21,6 +22,8 @@ class MainLoop {
                     map: this.map,
                 });
             })
+
+            const printOrder = this.map.order();
 
             // Draw lower layer
             this.map.drawLowerImage(this.ctx, cameraPerson);
@@ -38,7 +41,7 @@ class MainLoop {
                 this.map.cd = 20;
             }
 
-            if (this.map.bullets != undefined) {
+            if (this.map.bullets.length > 0) {
                 Object.values(this.map.bullets).forEach(bullet => {
                     bullet.update({
                         map: this.map,
@@ -47,18 +50,31 @@ class MainLoop {
                 });
 
                 for (let i = 0; i < this.map.bullets.length; i++) {
-                    this.map.bullets[i].sprite.draw(this.ctx, cameraPerson);
+                    try {
+                        this.map.bullets[i].sprite.draw(this.ctx, cameraPerson);
+                    } catch (error) {
+
+                    }
                 }
             }
             if (this.map.cd > 0) {
                 this.map.cd -= 1;
             }
 
+            new KeyPressListener("Enter", () => {
+
+            })
+
             requestAnimationFrame(() => {
                 step();
             })
         }
         step();
+    }
+
+    startMap(mapConfig) {
+        this.map = new Map(mapConfig);
+        this.map.mountObject();
     }
 
     init() {
@@ -71,6 +87,8 @@ class MainLoop {
         this.input.init();
         this.input.direction;
         this.input.actions;
+
+        this.map.gameObject.hero.displayInventory();
 
         this.gameLoop();
     }

@@ -5,6 +5,28 @@ class Person extends GameObject {
 
         this.isPlayerControlled = config.isPlayerControlled || false;
 
+        this.anger = 0; // to invoke an spirit
+
+        this.hp = config.hp || 100;
+        this.maxHp = config.maxHp || 100;
+        this.mana = config.mana || 100;
+        this.maxMana = config.maxMana || 100;
+        this.level = config.level || 1;
+        this.exp = config.exp || 0;
+        this.maxExp = config.maxExp || 100;
+        this.attack = config.attack || 10;
+        this.defense = config.defense || 10;
+        this.speed = config.speed || 10;
+        this.luck = config.luck || 10;
+        this.strength = config.strength || 10;
+        this.dexterity = config.dexterity || 10;
+        this.intelligence = config.intelligence || 10;
+        this.constitution = config.constitution || 10;
+        this.charisma = config.charisma || 10;
+        this.wisdom = config.wisdom || 10;
+
+        this.inventory = config.inventory || [];
+
         this.directionUpdate = {
             "up": ["y", -1],
             "down": ["y", 1],
@@ -50,6 +72,15 @@ class Person extends GameObject {
             return;
         }
         this.sprite.setAnimation("idle-" + this.direction);
+    }
+
+    displayInventory() {
+        this.inventory.forEach((item) => {
+            let li = document.createElement("li");
+            const txt = document.createTextNode(item.name);
+            li.appendChild(txt);
+            document.getElementById("inventory").appendChild(li);
+        })
     }
 
 }

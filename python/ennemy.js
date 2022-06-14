@@ -1,9 +1,12 @@
 class Ennemy extends GameObject {
     constructor(config) {
         super(config);
-        this.movingProgressRemaining = Math.floor(Math.random() * 100);
+        this.movingProgressRemaining = 0; //Math.floor(Math.random() * 100);
 
         this.isPlayerControlled = false;
+
+        this.hp = config.hp || 100;
+        this.maxHp = config.maxHp || 100;
 
         this.directionUpdate = {
             "up": ["y", -1],

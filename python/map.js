@@ -42,15 +42,29 @@ class Map {
 
         for (let i = 0; i < this.walls.length; i++) {
             const values = Object.values(this.walls[i])
-            if (x >= values[0] && x <= values[2] && y >= values[1] && y <= values[3]) {
+            if (x >= values[0] && x <= values[2] && y >= values[1] && y <= values[3] && this.walls[i][4] != "dead") {
                 res = true;
             }
         }
         return res;
     }
 
-    addWall(x, y, width, height) {
-        const wall = [x, y, x + width, y + height];
+    isPlayer(currentx, currenty, dir) {
+        const { x, y } = utils.nextPosition(currentx, currenty, dir);
+
+        let pos = -1;
+
+        for (let i = 0; i < this.walls.length; i++) {
+            const values = Object.values(this.walls[i])
+            if (x >= values[0] && x <= values[2] && y >= values[1] && y <= values[3] && this.walls[i][4] === "character") {
+                pos = i;
+            }
+        }
+        return pos;
+    }
+
+    addWall(x, y, width, height, type) {
+        const wall = [x, y, x + width, y + height, type];
         this.walls.unshift(wall);
     }
 
@@ -61,7 +75,6 @@ class Map {
                 delete this.walls[wall];
             }
         }
-
     }
 
     moveWall(wasx, wasy, width, height, dir) {
@@ -89,10 +102,12 @@ class Map {
     order() {
         var order = [];
         Object.values(this.gameObject).forEach(object => {
-            if (order.length === 0) {
-                order.push(object);
-            } else {
-                order = this.checkposition(object, order);
+            if (object.hp > 0 || object.isPlayerControlled) {
+                if (order.length === 0) {
+                    order.push(object);
+                } else {
+                    order = this.checkposition(object, order);
+                }
             }
         })
         return order;
@@ -111,6 +126,28 @@ class Map {
         this.bullets.splice(nb - 1, 1);
         console.log(this.bullets)
     }
+
+    updateWall(pos) {
+        this.walls[pos][4] = "dead";
+    }
+
+    //a refaire
+    collide(cameraPerson) {
+        Object.values(this.gameObject).forEach(object => {
+            for (let i = 0; i < this.bullets.length; i++) {
+                if (!object.isPlayerControlled) {
+                    let pos = this.isPlayer(this.bullets[i].x, this.bullets[i].y, this.bullets[i].direction);
+                    if (pos != -1) {
+                        object.hp -= cameraPerson.attack;
+                        if (object.hp <= 0) {
+                            this.updateWall(pos);
+                        }
+                        this.killBullet(i);
+                    }
+                }
+            }
+        })
+    }
 }
 
 window.OverworldMap = {
@@ -119,23 +156,29 @@ window.OverworldMap = {
         upperSrc: "images/maps/DemoUpper.png",
         gameObject: {
             mike: new Ennemy({
+                name: "mike",
+                x: utils.withGrid(5),
+                y: utils.withGrid(4),
+                hp: 100,
+                maxHp: 100,
+                src: "images/characters/people/npc1.png",
+            }),
+            /*bob: new GameObject({
+                name: "bob",
                 x: utils.withGrid(7),
                 y: utils.withGrid(9),
                 src: "images/characters/people/npc1.png",
-            }),
-            bob: new GameObject({
-                x: utils.withGrid(7),
-                y: utils.withGrid(9),
-                src: "images/characters/people/npc1.png",
-            }),
+            }),*/
             hero: new Person({
+                name: "hero",
+                inventory: [new Item(window.gameItems.blade_of_shurelia), ],
                 isPlayerControlled: true,
                 x: utils.withGrid(5),
                 y: utils.withGrid(6),
             }),
         },
         walls: [
-            { x1: 99, y1: 84, x2: 141, y2: 120 },
+            { x1: 99, y1: 84, x2: 141, y2: 120, type: "wall" },
         ]
     },
 
