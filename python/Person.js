@@ -33,9 +33,7 @@ class Person extends GameObject {
             if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
                 return;
             }
-
-            state.map.moveWall(this.x, this.y, this.direction);
-            this.movingProgressRemaining = 16;
+            this.movingProgressRemaining = 1;
         }
     }
 
@@ -43,6 +41,7 @@ class Person extends GameObject {
         const [property, change] = this.directionUpdate[this.direction];
         this[property] += change;
         this.movingProgressRemaining -= 1;
+        console.log("x : " + this.x + " y : " + this.y)
     }
 
     updateSprite() {
@@ -50,11 +49,7 @@ class Person extends GameObject {
             this.sprite.setAnimation("walk-" + this.direction);
             return;
         }
-
         this.sprite.setAnimation("idle-" + this.direction);
-
-
-
     }
 
 }

@@ -1,9 +1,9 @@
-class Person extends GameObject {
+class Ennemy extends GameObject {
     constructor(config) {
         super(config);
-        this.movingProgressRemaining = 0;
+        this.movingProgressRemaining = Math.floor(Math.random() * 100);
 
-        this.isPlayerControlled = config.isPlayerControlled || false;
+        this.isPlayerControlled = false;
 
         this.directionUpdate = {
             "up": ["y", -1],
@@ -17,12 +17,10 @@ class Person extends GameObject {
         if (this.movingProgressRemaining > 0) {
             this.updatePosition();
         } else {
-            if (this.isPlayerControlled && state.arrow) {
-                this.startBehavior(state, {
-                    type: "walk",
-                    direction: state.arrow,
-                })
-            }
+            this.startBehavior(state, {
+                type: "walk",
+                direction: Object.keys(this.directionUpdate)[Math.floor(Math.random() * 4)],
+            })
             this.updateSprite();
         }
     }
@@ -33,9 +31,7 @@ class Person extends GameObject {
             if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
                 return;
             }
-
-            state.map.moveWall(this.x, this.y, this.direction);
-            this.movingProgressRemaining = 16;
+            this.movingProgressRemaining = 1;
         }
     }
 
@@ -50,11 +46,7 @@ class Person extends GameObject {
             this.sprite.setAnimation("walk-" + this.direction);
             return;
         }
-
         this.sprite.setAnimation("idle-" + this.direction);
-
-
-
     }
 
 }

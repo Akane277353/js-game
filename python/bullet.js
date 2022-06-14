@@ -1,9 +1,7 @@
-class Person extends GameObject {
+class Bullet extends GameObject {
     constructor(config) {
         super(config);
-        this.movingProgressRemaining = 0;
-
-        this.isPlayerControlled = config.isPlayerControlled || false;
+        this.movingProgressRemaining = 30;
 
         this.directionUpdate = {
             "up": ["y", -1],
@@ -17,13 +15,7 @@ class Person extends GameObject {
         if (this.movingProgressRemaining > 0) {
             this.updatePosition();
         } else {
-            if (this.isPlayerControlled && state.arrow) {
-                this.startBehavior(state, {
-                    type: "walk",
-                    direction: state.arrow,
-                })
-            }
-            this.updateSprite();
+            state.map.killBullet(state.nb);
         }
     }
 
@@ -33,9 +25,6 @@ class Person extends GameObject {
             if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
                 return;
             }
-
-            state.map.moveWall(this.x, this.y, this.direction);
-            this.movingProgressRemaining = 16;
         }
     }
 
@@ -50,11 +39,7 @@ class Person extends GameObject {
             this.sprite.setAnimation("walk-" + this.direction);
             return;
         }
-
         this.sprite.setAnimation("idle-" + this.direction);
-
-
-
     }
 
 }
