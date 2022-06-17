@@ -1,7 +1,9 @@
 class Ennemy extends GameObject {
     constructor(config) {
         super(config);
-        this.movingProgressRemaining = 0; //Math.floor(Math.random() * 100);
+        this.movingProgressRemaining = 1; //Math.floor(Math.random() * 100);
+
+        this.timeBeforeTurn = 50;
 
         this.isPlayerControlled = false;
 
@@ -22,7 +24,7 @@ class Ennemy extends GameObject {
         } else {
             this.startBehavior(state, {
                 type: "walk",
-                direction: Object.keys(this.directionUpdate)[Math.floor(Math.random() * 4)],
+                direction: this.direction,
             })
             this.updateSprite();
         }
@@ -31,7 +33,9 @@ class Ennemy extends GameObject {
     startBehavior(state, behavior) {
         this.direction = behavior.direction;
         if (behavior.type == "walk") {
-            if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
+            if (state.map.isSelf(this.x, this.y, this.direction)) {
+                this.timeBeforeTurn = 50;
+                this.direction = Object.keys(this.directionUpdate)[Math.floor(Math.random() * 4)];
                 return;
             }
             this.movingProgressRemaining = 1;
@@ -42,6 +46,11 @@ class Ennemy extends GameObject {
         const [property, change] = this.directionUpdate[this.direction];
         this[property] += change;
         this.movingProgressRemaining -= 1;
+        this.timeBeforeTurn -= 1;
+        if (this.timeBeforeTurn <= 0) {
+            this.timeBeforeTurn = 50;
+            this.direction = Object.keys(this.directionUpdate)[Math.floor(Math.random() * 4)];
+        }
     }
 
     updateSprite() {

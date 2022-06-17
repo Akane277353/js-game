@@ -23,6 +23,8 @@ class MainLoop {
                 });
             })
 
+            this.map.updateWall();
+
             const printOrder = this.map.order();
 
             // Draw lower layer
@@ -62,8 +64,18 @@ class MainLoop {
             }
 
             new KeyPressListener("Enter", () => {
-
+                //console.log(this.map)
             })
+
+            new KeyPressListener("Enter", () => {
+                if (this.map.cd <= 0) {
+                    cameraPerson.hp -= 10;
+                    console.log(cameraPerson.hp)
+                    this.map.cd = 20;
+                }
+            })
+
+            this.hud.draw(this.ctx, cameraPerson);
 
             requestAnimationFrame(() => {
                 step();
@@ -87,6 +99,9 @@ class MainLoop {
         this.input.init();
         this.input.direction;
         this.input.actions;
+
+        this.hud = new Hud();
+
 
         this.map.gameObject.hero.displayInventory();
 

@@ -15,7 +15,7 @@ class Map {
 
     mountObject() {
         Object.values(this.gameObject).forEach(o => {
-            if (!o.isPlayerControlled) {
+            if (!o.isPlayerControlled && o.hp > 0) {
                 o.mount(this);
             }
         })
@@ -37,12 +37,22 @@ class Map {
 
     isSpaceTaken(currentx, currenty, dir) {
         const { x, y } = utils.nextPosition(currentx, currenty, dir);
-
         let res = false;
-
         for (let i = 0; i < this.walls.length; i++) {
             const values = Object.values(this.walls[i])
-            if (x >= values[0] && x <= values[2] && y >= values[1] && y <= values[3] && this.walls[i][4] != "dead") {
+            if (x >= values[0] && x <= values[2] && y >= values[1] && y <= values[3] && (this.walls[i][4] != "dead")) {
+                res = true;
+            }
+        }
+        return res;
+    }
+
+    isSelf(currentx, currenty, dir) {
+        const { x, y } = utils.nextPosition(currentx, currenty, dir);
+        let res = false;
+        for (let i = 0; i < this.walls.length; i++) {
+            const values = Object.values(this.walls[i])
+            if (x >= values[0] && x <= values[2] && y >= values[1] && y <= values[3] && (this.walls[i][4] != "character")) {
                 res = true;
             }
         }
@@ -51,9 +61,7 @@ class Map {
 
     isPlayer(currentx, currenty, dir) {
         const { x, y } = utils.nextPosition(currentx, currenty, dir);
-
         let pos = -1;
-
         for (let i = 0; i < this.walls.length; i++) {
             const values = Object.values(this.walls[i])
             if (x >= values[0] && x <= values[2] && y >= values[1] && y <= values[3] && this.walls[i][4] === "character") {
@@ -63,16 +71,30 @@ class Map {
         return pos;
     }
 
+    existWall(x, y, width, height, type) {
+        let res = false;
+        for (let i = 0; i < this.walls.length; i++) {
+            const values = Object.values(this.walls[i])
+            if (x === values[0] && x + width === values[2] && y === values[1] && y + height === values[3] && this.walls[i][4] === type) {
+                res = true;
+            }
+        }
+        return res;
+    }
+
     addWall(x, y, width, height, type) {
-        const wall = [x, y, x + width, y + height, type];
-        this.walls.unshift(wall);
+        let inside = this.existWall(x, y, width, height, type);
+        if (!inside) {
+            const wall = [x, y, x + width, y + height, type];
+            this.walls.unshift(wall);
+        }
     }
 
     removeWall(x, y, width, height) {
         for (let i = 0; i < this.walls.length; i++) {
-            const values = Object.values(this.walls[i])
-            if (x === values[0] && y === values[1] && x + width === values[2] && y + height === values[3]) {
+            if (x === this.walls[i][0] && y === this.walls[i][1] && x + width === this.walls[i][2] && y + height === this.walls[i][3]) {
                 delete this.walls[wall];
+                this.walls.splice(i, 1);
             }
         }
     }
@@ -81,6 +103,16 @@ class Map {
         this.removeWall(wasx, wasy, width, height);
         const { x, y } = utils.nextPosition(wasx, wasy, dir);
         this.addWall(x, y);
+    }
+
+    updateWall() {
+        for (let i = 0; i < this.walls.length; i++) {
+            if (this.walls[i][4] === "character") {
+                delete this.walls[i];
+                this.walls.splice(i, 1);
+            }
+        }
+        this.mountObject();
     }
 
     checkposition(object, order) {
@@ -122,12 +154,11 @@ class Map {
     }
 
     killBullet(nb) {
-        delete this.bullets[nb];
+        delete this.bullets[nb - 1];
         this.bullets.splice(nb - 1, 1);
-        console.log(this.bullets)
     }
 
-    updateWall(pos) {
+    updateWallSatut(pos) {
         this.walls[pos][4] = "dead";
     }
 
@@ -140,7 +171,7 @@ class Map {
                     if (pos != -1) {
                         object.hp -= cameraPerson.attack;
                         if (object.hp <= 0) {
-                            this.updateWall(pos);
+                            this.updateWallSatut(pos);
                         }
                         this.killBullet(i);
                     }
@@ -157,21 +188,18 @@ window.OverworldMap = {
         gameObject: {
             mike: new Ennemy({
                 name: "mike",
-                x: utils.withGrid(5),
+                x: utils.withGrid(7),
                 y: utils.withGrid(4),
                 hp: 100,
                 maxHp: 100,
                 src: "images/characters/people/npc1.png",
             }),
-            /*bob: new GameObject({
-                name: "bob",
-                x: utils.withGrid(7),
-                y: utils.withGrid(9),
-                src: "images/characters/people/npc1.png",
-            }),*/
             hero: new Person({
                 name: "hero",
-                inventory: [new Item(window.gameItems.blade_of_shurelia), ],
+                inventory: [
+                    new Item(window.gameItems.blade_of_shurelia),
+                    new Item(window.gameItems.potion_of_health),
+                ],
                 isPlayerControlled: true,
                 x: utils.withGrid(5),
                 y: utils.withGrid(6),

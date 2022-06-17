@@ -7,7 +7,7 @@ class Item {
         this.value = config.value;
         this.weight = config.weight;
         this.cd = config.cd || 20;
-
+        this.isEquiped = config.isEquiped || false;
 
 
         this.hp = config.hp || 0;
@@ -34,6 +34,7 @@ window.gameItems = {
         value: 100,
         weight: 1,
         cd: 20,
+        isEquiped: true,
     },
     stick_of_truth: {
         src: null,
@@ -48,16 +49,16 @@ window.gameItems = {
         src: null,
         name: "Potion of Health",
         description: "A potion that restores health.",
-        type: "potion",
+        type: "consumable",
         value: 100,
         weight: 1,
-        hp: 100,
+        hp: 50,
     },
     potion_of_mana: {
         src: null,
         name: "Potion of Mana",
         description: "A potion that restores mana.",
-        type: "potion",
+        type: "consumable",
         value: 100,
         weight: 1,
         mana: 100,
