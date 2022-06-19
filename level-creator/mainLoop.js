@@ -14,7 +14,6 @@ class MainLoop {
 
             const cameraPerson = this.map.gameObject.hero;
 
-            this.map.collide(cameraPerson);
 
             Object.values(this.map.gameObject).forEach(object => {
                 object.update({
@@ -23,45 +22,21 @@ class MainLoop {
                 });
             })
 
-            this.map.updateWall();
 
-            const printOrder = this.map.order();
-
+            this.map.draw(this.ctx, cameraPerson);
+            /*
             // Draw lower layer
             this.map.drawLowerImage(this.ctx, cameraPerson);
 
             // Draw upper layer
             this.map.drawUpperImage(this.ctx, cameraPerson);
+            */
 
             // Draw game object
-            for (let i = 0; i < printOrder.length; i++) {
-                printOrder[i].sprite.draw(this.ctx, cameraPerson);
-            }
 
-            if (this.input.actions === "shoot" && this.map.cd === 0) {
-                this.map.shoot(cameraPerson);
-                this.map.cd = 20;
-            }
-
-            if (this.map.bullets.length > 0) {
-                Object.values(this.map.bullets).forEach(bullet => {
-                    bullet.update({
-                        map: this.map,
-                        nb: this.map.bullets.length,
-                    });
-                });
-
-                for (let i = 0; i < this.map.bullets.length; i++) {
-                    try {
-                        this.map.bullets[i].sprite.draw(this.ctx, cameraPerson);
-                    } catch (error) {
-
-                    }
-                }
-            }
-            if (this.map.cd > 0) {
-                this.map.cd -= 1;
-            }
+            Object.values(this.map.gameObject).forEach(object => {
+                object.sprite.draw(this.ctx, cameraPerson);
+            })
 
             new KeyPressListener("Enter", () => {
                 //console.log(this.map)
@@ -74,9 +49,6 @@ class MainLoop {
                     this.map.cd = 20;
                 }
             })
-
-            this.hud.draw(this.ctx, cameraPerson);
-
             requestAnimationFrame(() => {
                 step();
             })
@@ -91,8 +63,8 @@ class MainLoop {
 
     init() {
         this.map = new Map(window.OverworldMap.DemoRoom);
+        this.map.init();
 
-        this.map.mountObject();
         console.log(this.map.walls)
 
         this.input = new DirectionInput();
@@ -100,10 +72,10 @@ class MainLoop {
         this.input.direction;
         this.input.actions;
 
-        this.hud = new Hud();
 
-
-        this.map.gameObject.hero.displayInventory();
+        document.addEventListener("click", e => {
+            this.map.changeBlock(e.clientX, e.clientY, this.canvas);
+        })
 
         this.gameLoop();
     }

@@ -1,9 +1,9 @@
 (function() {
 
-    const overworld = new Overworld({
+    const mainLoop = new MainLoop({
         element: document.querySelector(".game-container")
     });
 
-    overworld.init();
+    mainLoop.init();
 
 })();

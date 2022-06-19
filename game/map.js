@@ -11,6 +11,28 @@ class Map {
 
         this.bullets = [];
         this.cd = 0;
+        this.maptab = config.maptab || [];
+    }
+
+    init() {
+        for (let i = 0; i < this.maptab.length; i++) {
+            for (let j = 0; j < this.maptab[i].length; j++) {
+                if (this.maptab[i][j] === "x") {
+                    this.addWall(utils.withGrid(i), utils.withGrid(j), 16, 16, "wall");
+                }
+            }
+        }
+    }
+
+    draw(ctx, cameraPerson) {
+        for (let i = 0; i < this.maptab.length; i++) {
+            for (let j = 0; j < this.maptab[i].length; j++) {
+                if (this.maptab[i][j] === "x") {
+                    ctx.fillStyle = "#8fce00";
+                    ctx.fillRect(utils.withGrid(i + 11) - cameraPerson.x, utils.withGrid(j + 6.7) - cameraPerson.y, 16, 16);
+                }
+            }
+        }
     }
 
     mountObject() {
@@ -201,12 +223,27 @@ window.OverworldMap = {
                     new Item(window.gameItems.potion_of_health),
                 ],
                 isPlayerControlled: true,
-                x: utils.withGrid(5),
-                y: utils.withGrid(6),
+                x: utils.withGrid(6),
+                y: utils.withGrid(4),
             }),
         },
+        maptab: [
+            ["x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "x"],
+            ["x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x", "x"]
+        ],
         walls: [
-            { x1: 99, y1: 84, x2: 141, y2: 120, type: "wall" },
+            //{ x1: 99, y1: 84, x2: 141, y2: 120, type: "wall" },
         ]
     },
 

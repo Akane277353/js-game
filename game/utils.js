@@ -8,7 +8,7 @@ const utils = {
     nextPosition(initx, inity, dir) {
         let x = initx;
         let y = inity;
-        const size = 16;
+        const size = 1;
         if (dir === "left") {
             x -= size;
         } else if (dir === "right") {
