@@ -74,7 +74,7 @@ class MainLoop {
 
 
         document.addEventListener("click", e => {
-            this.map.changeBlock(e.clientX, e.clientY, this.canvas);
+            this.map.changeBlock(e.clientX, e.clientY, this.canvas, this.map.gameObject.hero);
         })
 
         this.gameLoop();
